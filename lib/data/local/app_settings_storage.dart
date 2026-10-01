@@ -87,8 +87,13 @@ class AppStoredConfig {
     this.autoStart = false,
     this.tunStack = TunStack.mixed,
     String? ruleSetProxy,
-  }) : subUA = subUA ?? Defaults.subUA,
+  }) : subUA = subUA ?? '',
        ruleSetProxy = ruleSetProxy ?? Defaults.ruleSetProxy;
+
+  /// 订阅 User-Agent 的生效值：空串表示“跟随内置默认值”。
+  /// 默认值含版本号（`singcast/<version> clash-meta`），不能把解析结果落盘，
+  /// 否则升级后配置里会永远停在旧版本号。启动时用本 getter 解析为当前默认。
+  String get resolvedSubUA => subUA.isEmpty ? Defaults.subUA : subUA;
 
   factory AppStoredConfig.fromJson(Map<String, dynamic> json) =>
       AppStoredConfig(
@@ -101,7 +106,7 @@ class AppStoredConfig {
         delayTestUrl:
             json['delay-test-url'] as String? ?? Defaults.delayTestUrl,
         tunIf: json['tun-if'] as bool?,
-        subUA: json['sub-ua'] as String? ?? Defaults.subUA,
+        subUA: json['sub-ua'] as String?,
         themeMode: json['theme-mode'] as String?,
         ignoredVersion: json['ignored-version'] as String?,
         autoCheckUpdate: json['auto-check-update'] as bool? ?? true,

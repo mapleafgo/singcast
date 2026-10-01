@@ -333,7 +333,7 @@ class _UaTile extends StatelessWidget {
       return ListTile(
         title: Text(t.settings.subUserAgent),
         subtitle: Text(
-          ua == Defaults.subUA ? t.settings.defaultValue : ua,
+          ua.isEmpty || ua == Defaults.subUA ? t.settings.defaultValue : ua,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -374,7 +374,8 @@ class _UaTile extends StatelessWidget {
               onSubmitted: (v) {
                 final trimmed = v.trim();
                 if (trimmed.isNotEmpty) {
-                  subUA.value = trimmed;
+                  // 等于内置默认值时存空串，下次启动继续跟随版本号自动更新。
+                  subUA.value = trimmed == Defaults.subUA ? '' : trimmed;
                 }
                 Navigator.pop(ctx);
               },
@@ -411,7 +412,10 @@ class _UaTile extends StatelessWidget {
           FilledButton(
             onPressed: () {
               final v = controller.text.trim();
-              if (v.isNotEmpty) subUA.value = v;
+              if (v.isNotEmpty) {
+                // 与 onSubmitted 一致：默认值存空串，避免冻结版本号。
+                subUA.value = v == Defaults.subUA ? '' : v;
+              }
               Navigator.pop(ctx);
             },
             child: Text(t.dialogs.confirm),

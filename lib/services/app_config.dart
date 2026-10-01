@@ -52,7 +52,7 @@ void initAppConfig() {
   selectedFile.value = _resolveSelected(stored.selectedFile, validProfiles);
   delayTestUrl.value = stored.delayTestUrl;
   tunIf.value = stored.tunIf ?? !Constants.isDesktop;
-  subUA.value = stored.subUA;
+  subUA.value = stored.resolvedSubUA;
   ruleSetProxy.value = stored.ruleSetProxy;
   autoCheckUpdate.value = stored.autoCheckUpdate;
   autoStart.value = stored.autoStart;

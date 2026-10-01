@@ -124,7 +124,7 @@ void main() {
       expect(json.containsKey('profiles'), true);
       expect(json['delay-test-url'], Defaults.delayTestUrl);
       expect(json.containsKey('tun-if'), true);
-      expect(json['sub-ua'], Defaults.subUA);
+      expect(json['sub-ua'], '');
       expect(json.containsKey('theme-mode'), true);
       expect(json.containsKey('ignored-version'), true);
       expect(json['auto-check-update'], true);
@@ -132,6 +132,39 @@ void main() {
       expect(json['auto-start'], false);
       expect(json['tun-stack'], 'mixed');
       expect(json['rule-set-proxy'], Defaults.ruleSetProxy);
+    });
+  });
+
+  group('AppStoredConfig subUA', () {
+    test('fromJson 缺省时 subUA 为空串，resolvedSubUA 取当前默认值', () {
+      final config = AppStoredConfig.fromJson({});
+      expect(config.subUA, '');
+      expect(config.resolvedSubUA, Defaults.subUA);
+    });
+
+    test('toJson 默认配置写入空串 sub-ua（跟随内置默认）', () {
+      expect(AppStoredConfig.empty().toJson()['sub-ua'], '');
+    });
+
+    test('fromJson 自定义值时 resolvedSubUA 返回自定义值', () {
+      final config = AppStoredConfig.fromJson({'sub-ua': 'clash-meta'});
+      expect(config.resolvedSubUA, 'clash-meta');
+    });
+
+    test('toJson 自定义值时写入 sub-ua', () {
+      final config = AppStoredConfig.empty().copyWith(subUA: 'clash-meta');
+      expect(config.toJson()['sub-ua'], 'clash-meta');
+    });
+
+    test('copyWith 保留原值', () {
+      final config = AppStoredConfig.empty().copyWith(subUA: 'clash-meta');
+      expect(config.copyWith().subUA, 'clash-meta');
+    });
+
+    test('resolvedSubUA 不落盘：默认值仅解析不冻结版本号', () {
+      final config = AppStoredConfig.fromJson({});
+      expect(config.resolvedSubUA, Defaults.subUA);
+      expect(config.toJson()['sub-ua'], isNot(Defaults.subUA));
     });
   });
 }
