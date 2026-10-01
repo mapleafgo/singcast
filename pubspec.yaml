@@ -68,6 +68,9 @@ dependency_overrides:
   # jni 1.0.1+ 移除了桌面端 JNIEnv** 到 void** 的转换，
   # Linux clang 22 会将 incompatible pointer types 视为错误。
   jni: 1.0.0
+  # jni_flutter 1.0.4 生成的版本校验要求 jni ^1.1.0，与上面的 jni 1.0.0
+  # 冲突导致桌面/移动端构建失败；1.0.3 仍按 jni 1.0.x 生成。
+  jni_flutter: 1.0.3
 
 flutter:
   uses-material-design: true

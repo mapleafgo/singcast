@@ -526,13 +526,13 @@ packages:
     source: hosted
     version: "1.0.0"
   jni_flutter:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: jni_flutter
-      sha256: c399ad579bfba12eb20c924f7a23160a42902f3023a871e1cad40a8a679656a4
+      sha256: b2310cdd4c18c65c081ab141a41efa94aa26c65431803703ece51996f174f351
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.4"
+    version: "1.0.3"
   json_annotation:
     dependency: "direct main"
     description:
