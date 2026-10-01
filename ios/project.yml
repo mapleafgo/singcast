@@ -19,6 +19,11 @@ settings:
     COPY_PHASE_STRIP: NO
     GCC_WARN_ABOUT_RETURN_TYPE: YES_ERROR
     GCC_WARN_UNDECLARED_SELECTOR: YES
+    # 新版内核（sing-box 1.14）的 cgo 解析器引用了 libresolv 的 res_9_* 符号，
+    # iOS 下必须显式链接，否则 Runner 与扩展在链接阶段报 Undefined symbol。
+    OTHER_LDFLAGS:
+      - "$(inherited)"
+      - "-lresolv"
 
 configs:
   Debug: debug
