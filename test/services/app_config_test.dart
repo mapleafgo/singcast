@@ -55,6 +55,19 @@ void main() {
       expect((tun['address'] as List).length, 2);
     });
 
+    test('tun inbound excludes RFC1918 by default', () {
+      coreConfig.value = SingboxConfig(tun: TunConfig(enable: true));
+      final result = jsonDecode(mergeProfileConfig(_profileJson));
+      final tun = (result['inbounds'] as List)
+          .cast<Map<String, dynamic>>()
+          .singleWhere((e) => e['type'] == 'tun');
+      expect(tun['route_exclude_address'], [
+        '10.0.0.0/8',
+        '172.16.0.0/12',
+        '192.168.0.0/16',
+      ]);
+    });
+
     test('injects clash_api when api enabled', () {
       coreConfig.value = SingboxConfig(
         externalController: true,

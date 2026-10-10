@@ -340,6 +340,12 @@ String mergeProfileConfig(String jsonContent) {
       'strict_route': true,
       'stack': tunStack.value.name,
       if (Platform.isLinux) 'auto_redirect': true,
+      // 默认绕过 RFC1918 网段，使局域网/VPN 流量沿系统路由访问，
+      'route_exclude_address': [
+        '10.0.0.0/8',
+        '172.16.0.0/12',
+        '192.168.0.0/16',
+      ],
       'address': [
         '172.18.0.1/30',
         if (config.ipv6 == true) 'fdfe:dcba:9876::1/126',
