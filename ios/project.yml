@@ -64,6 +64,8 @@ targets:
       - target: ExtensionProvider
       - framework: Frameworks/libsingcast-darwin.xcframework
         embed: true
+      # 静态内核引用 UIDevice，主 App 目标显式链接 UIKit。
+      - sdk: UIKit.framework
       - sdk: NetworkExtension.framework
         weak: true
     preBuildScripts:
@@ -104,6 +106,8 @@ targets:
     dependencies:
       - framework: Frameworks/libsingcast-darwin.xcframework
         embed: true
+      # 静态内核引用 UIDevice，隧道扩展目标也必须显式链接 UIKit。
+      - sdk: UIKit.framework
       - sdk: NetworkExtension.framework
 
   RunnerTests:
