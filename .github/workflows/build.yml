@@ -42,7 +42,7 @@ jobs:
           - arch: arm64
             runner: windows-11-arm
             flutter_channel: main
-            flutter_version: "a3222d4a"
+            flutter_version: "33aadb51de4a494175c745a1d9101d9ef22ee53e"
             llvm_ver: "20251202"
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 45
