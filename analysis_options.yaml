@@ -3,6 +3,12 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   exclude:
     - lib/clash_generated_bindings.dart
+    - build/**
+    - android/**
+    - ios/**
+    - windows/**
+    - macos/**
+    - linux/**
 
 linter:
   rules:
