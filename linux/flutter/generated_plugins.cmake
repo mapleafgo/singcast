@@ -3,9 +3,9 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  app_links_linux
   desktop_lifecycle
   desktop_tray
-  gtk
   local_notifier
   screen_retriever_linux
   url_launcher_linux
