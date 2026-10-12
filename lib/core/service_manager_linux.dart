@@ -175,7 +175,7 @@ class LinuxServiceManager extends ServiceManager with ServiceManagerLogging {
         );
         return false;
       }
-      return startDirect();
+      return await startDirect();
     } catch (e) {
       logMsg('start failed: $e', level: LogLevel.error);
       return false;
