@@ -7,7 +7,9 @@ import 'package:singcast/services/startup_service.dart';
 import 'package:singcast/utils/constants.dart';
 import 'package:singcast/utils/log_file.dart';
 import 'package:flutter/material.dart';
+
 import 'dart:async';
+
 import 'package:go_router/go_router.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
@@ -392,14 +394,12 @@ class _UaTile extends StatelessWidget {
                   ),
                   onPressed: () => controller.text = Defaults.subUA,
                 ),
-                ...Defaults.uaPresets
-                    .skip(1)
-                    .map(
-                      (ua) => ActionChip(
-                        label: Text(ua, style: const TextStyle(fontSize: 12)),
-                        onPressed: () => controller.text = ua,
-                      ),
-                    ),
+                ...Defaults.uaPresets.map(
+                  (ua) => ActionChip(
+                    label: Text(ua, style: const TextStyle(fontSize: 12)),
+                    onPressed: () => controller.text = ua,
+                  ),
+                ),
               ],
             ),
           ],

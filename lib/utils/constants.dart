@@ -36,9 +36,9 @@ class Defaults {
 
   static const uaPresets = [
     'ClashforWindows/0.20.39',
-    'clash-verge/v2.0.0',
+    'clash-verge/v2.5.8',
     'clash-meta',
-    'sing-box/1.13.14',
+    'sing-box/1.14.3',
   ];
 
   static Future<void> init() async {
