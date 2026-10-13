@@ -32,6 +32,13 @@ object NetworkMonitor {
 
     fun init(context: Context) {
         appContext = context.applicationContext
+        try {
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val network = cm.activeNetwork
+            AppLog.i(TAG, "network snapshot: pid=${android.os.Process.myPid()}, active=$network, capabilities=${network?.let { cm.getNetworkCapabilities(it) }}, interfaces=${getInterfacesJSON()}")
+        } catch (e: Exception) {
+            AppLog.w(TAG, "network snapshot: failed", e)
+        }
     }
 
     /// 按需回调：内核通过 InterfaceProvider.GetInterfaces() 调用，返回当前所有网络接口的 JSON 数组。

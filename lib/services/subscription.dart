@@ -42,22 +42,35 @@ Future<Profile> downloadSubscription({
     ..userAgent = resolvedSubUA
     ..connectionTimeout = const Duration(seconds: 15);
   final sw = Stopwatch()..start();
+  var phase = '连接服务器';
   LogFileWriter.instance?.log('downloading subscription: $url', name: 'sub');
   try {
     final req = await client.getUrl(Uri.parse(url));
+    phase = '接收响应';
+    LogFileWriter.instance?.log(
+      '订阅已建立连接: ua=$resolvedSubUA elapsed_ms=${sw.elapsedMilliseconds}',
+      name: 'sub',
+    );
     final resp = await req.close();
+    LogFileWriter.instance?.log(
+      '订阅响应: status=${resp.statusCode} elapsed_ms=${sw.elapsedMilliseconds}',
+      name: 'sub',
+    );
     if (resp.statusCode != HttpStatus.ok) {
       throw HttpException('HTTP ${resp.statusCode}');
     }
 
     // timeout 挂在 fold 的 Future 上限制总时长；挂在 Stream 上只限制
     // 相邻 chunk 间隔，慢速滴流的服务器可以无限拖住下载。
+    phase = '读取内容';
     final bytes = await resp
         .fold<List<int>>([], (acc, chunk) => acc..addAll(chunk))
         .timeout(const Duration(minutes: 3));
     // base64 解码、格式识别、URI 列表转换全部由内核处理
     final raw = utf8.decode(bytes);
+    phase = '转换配置';
     final jsonContent = await LibCore.instance.convert(raw);
+    phase = '保存配置';
     await File(savePath).writeAsString(jsonContent);
     LogFileWriter.instance?.log(
       'subscription saved: ${bytes.length} bytes in ${sw.elapsedMilliseconds}ms',
@@ -79,6 +92,14 @@ Future<Profile> downloadSubscription({
           24,
       userinfo: parseSubInfo(resp.headers.value('subscription-userinfo')),
     );
+  } catch (e, stack) {
+    LogFileWriter.instance?.log(
+      '订阅拉取失败: phase=$phase elapsed_ms=${sw.elapsedMilliseconds} '
+      'type=${e.runtimeType} error=$e\n$stack',
+      level: LogLevel.error,
+      name: 'sub',
+    );
+    rethrow;
   } finally {
     client.close();
   }

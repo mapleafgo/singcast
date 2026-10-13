@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:singcast/data/local/app_settings_storage.dart';
 import 'package:singcast/utils/constants.dart';
+import 'package:singcast/utils/log_file.dart';
+import 'package:singcast/domain/enums.dart';
 
 /// 检查是否有新版本可用。
 ///
@@ -18,16 +20,30 @@ import 'package:singcast/utils/constants.dart';
 Future<String?> checkForUpdate() async {
   final current = Defaults.appVersion;
   final client = HttpClient()..connectionTimeout = const Duration(seconds: 10);
+  final sw = Stopwatch()..start();
+  var phase = '连接服务器';
+  LogFileWriter.instance?.log('检查更新开始: version=$current', name: 'update');
   try {
     final req = await client.getUrl(Uri.parse(Constants.releaseUrl));
+    phase = '接收响应';
+    LogFileWriter.instance?.log(
+      '检查更新已建立连接: elapsed_ms=${sw.elapsedMilliseconds}',
+      name: 'update',
+    );
     final resp = await req.close();
+    LogFileWriter.instance?.log(
+      '检查更新响应: status=${resp.statusCode} elapsed_ms=${sw.elapsedMilliseconds}',
+      name: 'update',
+    );
     if (resp.statusCode != HttpStatus.ok) {
       throw HttpException('HTTP ${resp.statusCode}');
     }
+    phase = '读取内容';
     final body = await resp
         .transform(utf8.decoder)
         .join()
         .timeout(const Duration(seconds: 15));
+    phase = '解析版本';
     final data = jsonDecode(body) as Map<String, dynamic>;
     final tag = data['tag_name'] as String? ?? '';
     // 只去掉前缀 v：replaceFirst 会误删任意位置的首个 v（如 1.2.0-dev）
@@ -36,6 +52,14 @@ Future<String?> checkForUpdate() async {
     final latestVersion = Version.parse(latest);
     final currentVersion = Version.parse(current);
     return (latestVersion > currentVersion) ? latest : null;
+  } catch (e, stack) {
+    LogFileWriter.instance?.log(
+      '检查更新失败: phase=$phase elapsed_ms=${sw.elapsedMilliseconds} '
+      'type=${e.runtimeType} error=$e\n$stack',
+      level: LogLevel.error,
+      name: 'update',
+    );
+    rethrow;
   } finally {
     client.close();
   }

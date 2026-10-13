@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:singcast/services/app_config.dart';
 import 'package:singcast/services/subscription.dart';
 import 'package:singcast/utils/constants.dart';
+import 'package:singcast/utils/log_file.dart';
 
 void main() {
   test('初始 UA 保留跟随默认的空串，避免保存时冻结版本号', () {
@@ -19,11 +20,13 @@ void main() {
       originalUA = subUA.value;
       server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
       directory = await Directory.systemTemp.createTemp('subscription-ua-');
+      await LogFileWriter.init('${directory.path}/request.log');
     });
 
     tearDown(() async {
       subUA.value = originalUA;
       await server.close(force: true);
+      await LogFileWriter.instance?.close();
       await directory.delete(recursive: true);
     });
 
@@ -46,6 +49,10 @@ void main() {
           throwsA(isA<HttpException>()),
         );
         expect(await receivedUA, ua.isEmpty ? Defaults.subUA : ua);
+        final log = await LogFileWriter.exportBundle();
+        expect(log, contains('订阅拉取失败'));
+        expect(log, contains('HTTP 503'));
+        expect(log, contains('phase=接收响应'));
       });
     }
   });
