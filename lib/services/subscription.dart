@@ -39,7 +39,7 @@ Future<Profile> downloadSubscription({
   }
 
   final client = HttpClient()
-    ..userAgent = subUA.value
+    ..userAgent = resolvedSubUA
     ..connectionTimeout = const Duration(seconds: 15);
   final sw = Stopwatch()..start();
   LogFileWriter.instance?.log('downloading subscription: $url', name: 'sub');

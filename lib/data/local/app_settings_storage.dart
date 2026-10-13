@@ -92,7 +92,7 @@ class AppStoredConfig {
 
   /// 订阅 User-Agent 的生效值：空串表示“跟随内置默认值”。
   /// 默认值含版本号（`singcast/<version> clash-meta`），不能把解析结果落盘，
-  /// 否则升级后配置里会永远停在旧版本号。启动时用本 getter 解析为当前默认。
+  /// 否则升级后配置里会永远停在旧版本号。请求时再解析为当前默认。
   String get resolvedSubUA => subUA.isEmpty ? Defaults.subUA : subUA;
 
   factory AppStoredConfig.fromJson(Map<String, dynamic> json) =>

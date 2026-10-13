@@ -19,7 +19,10 @@ final profiles = signal<List<Profile>>([]);
 final profileError = signal<String?>(null);
 final delayTestUrl = signal(Defaults.delayTestUrl);
 final tunIf = signal<bool?>(null);
-final subUA = signal(Defaults.subUA);
+final subUA = signal('');
+
+/// 请求使用解析后的 UA，设置保留空串以跟随当前版本的默认值。
+String get resolvedSubUA => subUA.value.isEmpty ? Defaults.subUA : subUA.value;
 final ruleSetProxy = signal(Defaults.ruleSetProxy);
 final autoCheckUpdate = signal(true);
 
@@ -52,7 +55,7 @@ void initAppConfig() {
   selectedFile.value = _resolveSelected(stored.selectedFile, validProfiles);
   delayTestUrl.value = stored.delayTestUrl;
   tunIf.value = stored.tunIf ?? !Constants.isDesktop;
-  subUA.value = stored.resolvedSubUA;
+  subUA.value = stored.subUA;
   ruleSetProxy.value = stored.ruleSetProxy;
   autoCheckUpdate.value = stored.autoCheckUpdate;
   autoStart.value = stored.autoStart;
@@ -72,9 +75,8 @@ void initAppConfig() {
     localeVersion.value++;
     // 通知 Android 重建通知栏文本（iOS 无前台服务通知栏，不调用）
     if (Platform.isAndroid) {
-      const MethodChannel(
-        Constants.methodChannelName,
-      ).invokeMethod('updateNotification', {'locale': appLocale.value});
+      const MethodChannel(Constants.methodChannelName)
+          .invokeMethod('updateNotification', {'locale': appLocale.value});
     }
   });
 }
